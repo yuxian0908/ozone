@@ -17,6 +17,9 @@
 
 package org.apache.hadoop.ozone.om.helpers;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
@@ -302,6 +305,10 @@ public class SnapshotDiffJob {
   private static final class SnapshotDiffJobCodec
       implements Codec<SnapshotDiffJob> {
 
+    private static final ObjectMapper MAPPER = new ObjectMapper()
+        .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
     @Override
     public Class<SnapshotDiffJob> getTypeClass() {
       return SnapshotDiffJob.class;
@@ -314,8 +321,12 @@ public class SnapshotDiffJob {
 
     @Override
     public SnapshotDiffJob fromPersistedFormatImpl(byte[] rawData) throws IOException {
-      SnapshotDiffJobProto proto = SnapshotDiffJobProto.parseFrom(rawData);
-      return SnapshotDiffJob.getFromProtoBuf(proto);
+      try {
+        SnapshotDiffJobProto proto = SnapshotDiffJobProto.parseFrom(rawData);
+        return SnapshotDiffJob.getFromProtoBuf(proto);
+      } catch (InvalidProtocolBufferException e) {
+        return MAPPER.readValue(rawData, SnapshotDiffJob.class);
+      }
     }
 
     @Override
