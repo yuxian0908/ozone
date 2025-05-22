@@ -27,6 +27,7 @@ import org.apache.hadoop.hdds.utils.db.Codec;
 import org.apache.hadoop.ozone.protocol.proto.OzoneManagerProtocolProtos.SnapshotDiffJobProto;
 import org.apache.hadoop.ozone.snapshot.SnapshotDiffResponse.JobStatus;
 import org.apache.hadoop.ozone.snapshot.SnapshotDiffResponse.SubStatus;
+import org.apache.ratis.thirdparty.com.google.protobuf.InvalidProtocolBufferException;
 
 /**
  * POJO for Snapshot diff job.
